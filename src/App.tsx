@@ -3,7 +3,7 @@ import { Terminal, Code, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Alert, AlertDescription } from './components/ui/alert';
 import CreateMockDialog from './CreateMockDialog';
-import {QueryURLDialog, QueryURLDialogProvider} from './QueryURLDialog';
+import {useQueryURLDialog, QueryURLDialog, QueryURLDialogProvider} from './QueryURLDialog';
 
 interface MockRule {
   match_type: number;
@@ -87,6 +87,8 @@ const MockServerApp: React.FC = () => {
     }
   };
 
+  const { setState } = useQueryURLDialog();
+
   return (
       <div className="flex h-screen bg-gray-100">
         {/* Sidebar */}
@@ -120,7 +122,7 @@ const MockServerApp: React.FC = () => {
                 </div>
 
                 {/* Mock URLs List */}
-                <QueryURLDialogProvider>
+
                   <Card>
                     <CardHeader>
                       <CardTitle>Mock URLs</CardTitle>
@@ -148,7 +150,7 @@ const MockServerApp: React.FC = () => {
                                 <td className="p-2">{mock.description || '-'}</td>
                                 <td className="p-2">
                                   <button
-                                      onClick={() => QueryURLDialog.open(mock)}
+                                      onClick={() => setState({ isOpen: true, mockData: mock })}
                                       className="text-blue-500 hover:text-blue-600"
                                   >
                                     Details
@@ -205,7 +207,6 @@ const MockServerApp: React.FC = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </QueryURLDialogProvider>
 
                 {/* Test Mock */}
                 <Card>
@@ -254,4 +255,16 @@ const MockServerApp: React.FC = () => {
   );
 };
 
-export default MockServerApp;
+// export default MockServerApp;
+
+
+const WrappedMockServerApp: React.FC = () => {
+  return (
+      <QueryURLDialogProvider>
+        <MockServerApp />
+        <QueryURLDialog /> {/* Add this if it's not already rendered by the provider */}
+      </QueryURLDialogProvider>
+  );
+};
+
+export default WrappedMockServerApp;

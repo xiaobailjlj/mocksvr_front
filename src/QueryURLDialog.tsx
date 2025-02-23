@@ -37,6 +37,14 @@ const DialogContext = createContext<{
     setState: React.Dispatch<React.SetStateAction<DialogState>>;
 } | null>(null);
 
+const useQueryURLDialog = () => {
+    const context = useContext(DialogContext);
+    if (!context) {
+        throw new Error('useQueryURLDialog must be used within a QueryURLDialogProvider');
+    }
+    return context;
+};
+
 const QueryURLDialog: React.FC & { open: (mock: MockData) => void } = () => {
     const context = useContext(DialogContext);
     if (!context) return null;
@@ -95,18 +103,27 @@ const QueryURLDialog: React.FC & { open: (mock: MockData) => void } = () => {
                                                 <p>{rule.match_type === 1 ? 'Query Parameter' : 'Request Body'}</p>
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium">Match Rule</p>
+                                                <p className="text-sm font-medium overflow-x-auto">Match Rule</p>
                                                 <p className="font-mono">{rule.match_rule}</p>
                                             </div>
                                         </div>
                                         <div className="mt-2">
-                                            <p className="text-sm font-medium">Description</p>
+                                            <p className="text-sm font-medium overflow-x-auto">Description</p>
                                             <p>{rule.description}</p>
                                         </div>
                                         <div className="mt-2">
-                                            <p className="text-sm font-medium">Response</p>
-                                            <p className="font-mono">Code: {rule.response_code}</p>
-                                            <pre className="bg-gray-100 p-2 rounded mt-1 text-sm">
+                                            <p className="text-sm font-medium ">Response Code</p>
+                                            <p className="text-sm font-medium">{rule.response_code}</p>
+                                        </div>
+                                        <div className="mt-2">
+                                            <p className="text-sm font-medium ">Response Header</p>
+                                            <pre className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
+                                                {JSON.stringify(rule.response_header, null, 2)}
+                                            </pre>
+                                        </div>
+                                        <div className="mt-2">
+                                            <p className="text-sm font-medium ">Response Body</p>
+                                            <pre className="bg-gray-100 p-2 rounded mt-1 text-sm overflow-x-auto">
                                                 {JSON.stringify(rule.response_body, null, 2)}
                                             </pre>
                                         </div>
@@ -147,4 +164,4 @@ QueryURLDialog.open = (mockData: MockData) => {
     }
 };
 
-export { QueryURLDialog, QueryURLDialogProvider };
+export { useQueryURLDialog, QueryURLDialog, QueryURLDialogProvider };
