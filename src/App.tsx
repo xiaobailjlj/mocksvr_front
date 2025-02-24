@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './com
 import { Alert, AlertDescription } from './components/ui/alert';
 import CreateMockDialog from './CreateMockDialog';
 import {useQueryURLDialog, QueryURLDialog, QueryURLDialogProvider} from './QueryURLDialog';
+import mock = jest.mock;
 
 interface MockRule {
   match_type: number;
@@ -89,6 +90,18 @@ const MockServerApp: React.FC = () => {
 
   const { setState } = useQueryURLDialog();
 
+
+  const deleteMock = async (mock: MockData) => {
+    try {
+      const response = await fetch(`http://localhost:7001/v1/url/delete?url_id=${mock.id}`);
+      const data = await response.json();
+      setResponse(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    }
+  };
+
   return (
       <div className="flex h-screen bg-gray-100">
         {/* Sidebar */}
@@ -139,6 +152,7 @@ const MockServerApp: React.FC = () => {
                             <th className="text-left p-2">URL</th>
                             <th className="text-left p-2">Description</th>
                             <th className="text-left p-2">Details</th>
+                            <th className="text-left p-2">Delete</th>
                             <th className="text-left p-2">Select</th>
                           </tr>
                           </thead>
@@ -154,6 +168,17 @@ const MockServerApp: React.FC = () => {
                                       className="text-blue-500 hover:text-blue-600"
                                   >
                                     Details
+                                  </button>
+                                </td>
+                                <td className="p-2">
+                                  <button
+                                      onClick={async () => {
+                                        await deleteMock(mock);
+                                        fetchMockUrls(currentPage);
+                                      }}
+                                      className="text-blue-500 hover:text-blue-600"
+                                  >
+                                    Delete
                                   </button>
                                 </td>
                                 <td className="p-2">

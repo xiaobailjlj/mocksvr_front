@@ -201,6 +201,7 @@ const CreateMockDialog: React.FC<CreateMockDialogProps> = ({ onSuccess }) => {
                                 }}
                                 className="w-full p-2 border rounded h-24 font-mono"
                                 placeholder="{}"
+                                required
                             />
                         </div>
 
@@ -252,6 +253,40 @@ const CreateMockDialog: React.FC<CreateMockDialogProps> = ({ onSuccess }) => {
                                             placeholder={currentRule.match_type === 1 ? "param=test" : '{"key":"value"}'}
                                         />
                                     </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Response Code</label>
+                                    <input
+                                        type="text"
+                                        value={currentRule.response_code}
+                                        onChange={e => setCurrentRule({...currentRule, response_code: e.target.value})}
+                                        className="w-full p-2 border rounded"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Response Headers (JSON)</label>
+                                    <textarea
+                                        value={JSON.stringify(currentRule.response_header, null, 2)}
+                                        onChange={e => {
+                                            try {
+                                                const headers = JSON.parse(e.target.value);
+                                                setCurrentRule({...currentRule, response_header: headers});
+                                            } catch (err) {
+                                                // Invalid JSON - keep the text but don't update the state
+                                            }
+                                        }}
+                                        className="w-full p-2 border rounded h-24 font-mono"
+                                        placeholder="{}"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Response Body</label>
+                                    <textarea
+                                        value={currentRule.response_body}
+                                        onChange={e => setCurrentRule({...currentRule, response_body: e.target.value})}
+                                        className="w-full p-2 border rounded h-32 font-mono"
+                                        placeholder="{}"
+                                    />
                                 </div>
 
                                 <Button
