@@ -154,7 +154,7 @@ const CreateMockDialog: React.FC<CreateMockDialogProps> = ({ onSuccess }) => {
                     New Mock
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] !p-0">
+            <DialogContent className="max-w-3xl !p-0 bg-gray-500">
                 <form onSubmit={handleCreateMock} className="flex flex-col h-full max-h-[90vh]">
                     <DialogHeader className="px-6 py-4 border-b">
                         <DialogTitle>Create New Mock</DialogTitle>

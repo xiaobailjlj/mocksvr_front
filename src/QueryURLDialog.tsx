@@ -57,43 +57,42 @@ const QueryURLDialog: React.FC & { open: (mock: MockData) => void } = () => {
 
     return (
         <Dialog open={state.isOpen} onOpenChange={() => handleClose()}>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
-                <DialogHeader>
+            <DialogContent className="max-w-3xl max-h-[90vh] !p-0 bg-gray-500">
+                <DialogHeader className="px-6 py-4 border-b">
                     <DialogTitle>URL Details</DialogTitle>
                 </DialogHeader>
 
                 {state.mockData && (
-                    <div className="overflow-y-auto max-h-[60vh] space-y-4 p-4">
+                    <div className="overflow-y-auto max-h-[85vh] space-y-4 p-4">
                         <div>
-                            <h3 className="text-lg font-medium mb-2">Basic Information</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-sm font-medium">URL Path</p>
+                                    <p className="block text-sm font-medium mb-1">URL Path</p>
                                     <p className="font-mono">{state.mockData.url}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium">Response Code</p>
+                                    <p className="block text-sm font-medium mb-1">Response Code</p>
                                     <p className="font-mono">{state.mockData.response_code}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-medium mb-2">Response Headers</h3>
+                            <h3 className="block text-sm font-medium mb-1">Response Headers</h3>
                             <pre className="bg-gray-50 p-2 rounded overflow-x-auto">
                                 {JSON.stringify(state.mockData.response_header, null, 2)}
                             </pre>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-medium mb-2">Response Body</h3>
+                            <h3 className="block text-sm font-medium mb-1">Response Body</h3>
                             <pre className="bg-gray-50 p-2 rounded overflow-x-auto">
                                 {state.mockData.response_body}
                             </pre>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-medium mb-2">Rules</h3>
+                            <h3 className="block text-sm font-medium mb-1">Rules</h3>
                             <div className="space-y-4">
                                 {state.mockData.rules?.map((rule, index) => (
                                     <div key={index} className="border rounded p-4 bg-gray-50">
