@@ -11,6 +11,7 @@ import {
     DialogTrigger,
 } from './components/ui/dialog';
 import { Alert, AlertDescription } from './components/ui/alert';
+import {config} from "./config";
 
 interface MockRule {
     match_type: number;
@@ -93,7 +94,7 @@ const CreateMockDialog: React.FC<CreateMockDialogProps> = ({ onSuccess }) => {
     const handleCreateMock = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:7001/v1/url/new', {
+            const response = await fetch(`${config.apiBaseUrl}/v1/url/new`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
