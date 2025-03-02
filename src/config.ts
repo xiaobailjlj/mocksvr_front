@@ -2,6 +2,7 @@
 interface Config {
     apiBaseUrl: string;
     mockServiceUrl: string;
+    boardgameUrl: string;
 }
 
 // Environment-specific configurations
@@ -9,14 +10,17 @@ const configs: Record<string, Config> = {
     development: {
         apiBaseUrl: 'http://localhost:7001',
         mockServiceUrl: 'http://localhost:7002',
+        boardgameUrl: 'http://localhost:9001',
     },
     test: {
-        apiBaseUrl: 'https://13.61.17.9:7001',
-        mockServiceUrl: 'https://13.61.17.9:7002',
+        apiBaseUrl: 'https://api.jingpersonal.click:6001',
+        mockServiceUrl: 'https://mock.jingpersonal.click:6002',
+        boardgameUrl: 'http://localhost:9001',
     },
     production: {
-        apiBaseUrl: 'https://13.61.17.9:7001',
-        mockServiceUrl: 'https://13.61.17.9:7002',
+        apiBaseUrl: 'https://api.jingpersonal.click:6001',
+        mockServiceUrl: 'https://mock.jingpersonal.click:6002',
+        boardgameUrl: 'http://localhost:9001',
     },
 };
 
