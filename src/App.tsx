@@ -31,7 +31,7 @@ const App: React.FC = () => {
 
                 <div className="p-4">
                     <h2 className={`text-xl font-bold mb-4 ${collapsed ? 'text-center' : ''}`}>
-                        {collapsed ? 'P' : 'Projects'}
+                        {collapsed ? 'M' : 'Mini Projects'}
                     </h2>
                     <nav>
                         {projects.map(project => (

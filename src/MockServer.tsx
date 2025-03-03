@@ -98,7 +98,7 @@ const MockServerApp: React.FC = () => {
     return (
         <div className="space-y-6">
             {/* Create New Mock Dialog */}
-            <div className="flex justify-end mb-4">
+            <div className="pt-10 flex justify-end mb-4">
                 <CreateMockDialog onSuccess={() => fetchMockUrls(currentPage)} />
             </div>
 
