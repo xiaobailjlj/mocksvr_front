@@ -602,42 +602,55 @@ const GamePlay: React.FC<{
             {/* Main Game Area */}
             <div className="flex-1 flex flex-col bg-gray-800 text-white relative">
                 {/* Game Title */}
-                <div className="w-full text-center p-4 bg-gradient-to-b from-gray-800 to-transparent">
+                <div className="w-full text-center pt-4 pb-10 bg-gradient-to-b from-gray-800 to-transparent">
                     <div className="inline-block relative">
-                        <h1 className="text-2xl font-bold text-white px-6 py-2 border-b-4 border-double border-opacity-30 border-white">
+                        <h1 className="text-2xl font-bold text-white px-6 py-1 border-b-4 border-double border-opacity-30 border-white">
                             {gameData.name}
                         </h1>
-                        <div className="text-sm italic text-white opacity-80 mt-1">A Tale of Strategy & Fortune</div>
                     </div>
                 </div>
-
                 {/* Game Board */}
-                <div className="flex-1 flex flex-col items-center justify-center p-4">
-                    <div className="w-4/5 h-64 bg-cover bg-center border-4 border-white rounded-lg relative"
+                <div className="flex-1 flex flex-col items-center pt-0">
+                    <div className="w-4/5 h-80 bg-cover bg-center border-4 border-white rounded-lg relative"
                          style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/static/mappractice3.jpg')` }}>
-                        {players.map((player, index) => (
-                            <div
-                                key={index}
-                                className="w-20 h-20 border-2 border-white rounded-full flex items-center justify-center text-sm bg-black bg-opacity-60 absolute"
-                                style={{
-                                    left: player.x,
-                                    top: player.y,
-                                    backgroundImage: player.image,
-                                    backgroundSize: 'cover'
-                                }}
-                            >
-                                {player.name}
-                            </div>
-                        ))}
-                    </div>
+                        {players.map((player, index) => {
+                            // Calculate symmetric positions based on total player count
+                            const totalPlayers = players.length;
+                            const angle = (index / totalPlayers) * 2 * Math.PI; // Distribute evenly in a circle
 
-                    <div className="mt-6 text-center">
+                            // Center point of the game board
+                            const centerX = '50%';
+                            const centerY = '50%';
+
+                            // Radius of the circle (adjust as needed, smaller for more centered)
+                            const radius = '30%';
+
+                            // Calculate position - using percentages for responsive positioning
+                            const xPos = `calc(${centerX} + ${radius} * ${Math.cos(angle)})`;
+                            const yPos = `calc(${centerY} + ${radius} * ${Math.sin(angle)})`;
+
+                            return (
+                                <div
+                                    key={index}
+                                    className="text-center w-20 h-20 border-2 border-white rounded-full flex items-center justify-center text-sm bg-black bg-opacity-60 absolute transform -translate-x-1/2 -translate-y-1/2"
+                                    style={{
+                                        left: xPos,
+                                        top: yPos,
+                                        backgroundImage: player.image,
+                                        backgroundSize: 'cover'
+                                    }}
+                                >
+                                    {player.name}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-4 text-center">
                         <h2 className="text-xl font-bold">{myPlayer ? `You are ${myPlayer.character}` : ''}</h2>
                         <p>{dynamicMessage}</p>
                     </div>
-
                     {/* Actions Buttons */}
-                    <div className="mt-6 space-y-2">
+                    <div className="mt-4 space-y-2">
                         {actions.map(([key, text], index) => (
                             <div key={index} className="flex items-center">
                                 <p className="mr-2">{text}</p>

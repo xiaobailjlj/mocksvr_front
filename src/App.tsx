@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Terminal, Dices, UtensilsCrossed } from 'lucide-react';
+import { Terminal, Dices, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react';
+
 import WrappedMockServerApp from './MockServer';
 import BoardgameServerApp from './BoardgameServer';
 
 const App: React.FC = () => {
     const [selectedProject, setSelectedProject] = useState<string>('mock-server');
+    const [collapsed, setCollapsed] = useState(false);
 
     const projects = [
         { id: 'mock-server', name: 'Mock Server', icon: Terminal },
@@ -15,9 +17,22 @@ const App: React.FC = () => {
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
-            <div className="w-64 bg-white shadow-lg">
+            <div className={`bg-white shadow-lg transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} relative`}>
+                {/* Collapse toggle button */}
+                <button
+                    onClick={() => setCollapsed(!collapsed)}
+                    className="absolute -right-3 top-5 bg-white rounded-full p-1 shadow-md z-10 border border-gray-200"
+                >
+                    {collapsed ?
+                        <ChevronRight className="w-4 h-4 text-gray-600" /> :
+                        <ChevronLeft className="w-4 h-4 text-gray-600" />
+                    }
+                </button>
+
                 <div className="p-4">
-                    <h2 className="text-xl font-bold mb-4">Projects</h2>
+                    <h2 className={`text-xl font-bold mb-4 ${collapsed ? 'text-center' : ''}`}>
+                        {collapsed ? 'P' : 'Projects'}
+                    </h2>
                     <nav>
                         {projects.map(project => (
                             <button
@@ -26,15 +41,15 @@ const App: React.FC = () => {
                                 className={`flex items-center w-full p-2 rounded-lg mb-2 ${
                                     selectedProject === project.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
                                 }`}
+                                title={collapsed ? project.name : ''}
                             >
-                                <project.icon className="w-5 h-5 mr-2" />
-                                {project.name}
+                                <project.icon className={`w-5 h-5 ${collapsed ? 'mx-auto' : 'mr-2'}`} />
+                                {!collapsed && project.name}
                             </button>
                         ))}
                     </nav>
                 </div>
             </div>
-
             {/* Main Content */}
             <div className="flex-1 p-0 overflow-auto">
                 {selectedProject === 'mock-server' && <WrappedMockServerApp />}
