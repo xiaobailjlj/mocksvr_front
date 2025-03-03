@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { config } from './config';
 
+
 // Main Boardgame Component
 const BoardgameServerApp: React.FC = () => {
-    const [currentView, setCurrentView] = useState<'selector' | 'game'>('selector');
+    const [currentView, setCurrentView] = useState<'selector' | 'game' | 'optimize'>('selector');
     const [gameData, setGameData] = useState<any>(null);
     const [selectedCharacter, setSelectedCharacter] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(false);
     const [roundNumber, setRoundNumber] = useState<number>(1);
+    const [newRule, setNewRule] = useState<string>('');
     const urlPrefix = config.boardgameUrl;
 
+    // Functions to handle loading state
+    const showLoading = () => {
+        const existingIndicator = document.getElementById('loadingIndicator');
+        if (existingIndicator) {
+            existingIndicator.style.display = 'flex';
+        }
+    };
+
+    const hideLoading = () => {
+        const existingIndicator = document.getElementById('loadingIndicator');
+        if (existingIndicator) {
+            existingIndicator.style.display = 'none';
+        }
+    };
+
     const handleGameGeneration = (formData: any) => {
-        setLoading(true);
+        showLoading();
         fetch(`${urlPrefix}/api/v1/rules/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -20,20 +36,58 @@ const BoardgameServerApp: React.FC = () => {
             .then(response => response.json())
             .then(data => {
                 setGameData(data);
-                setCurrentView('game');
-                setLoading(false);
+                setCurrentView('optimize');
+                hideLoading();
             })
             .catch(error => {
                 console.error('Error:', error);
-                setLoading(false);
+                hideLoading();
             });
+    };
+
+    const handleRuleOptimization = () => {
+        if (newRule.trim() === '') return;
+
+        showLoading();
+        fetch(`${urlPrefix}/api/v1/rules/optimize`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                rule_id: gameData.rule_id,
+                feedback: newRule
+            })
+        })
+            .then(response => response.json())
+            .then(updatedData => {
+                setGameData(updatedData);
+                setNewRule('');
+                hideLoading();
+                alert('Rules updated successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideLoading();
+                alert('An error occurred while updating the rules.');
+            });
+    };
+
+    const startGameAfterOptimize = () => {
+        setCurrentView('game');
     };
 
     return (
         <div className="flex flex-col w-full h-full">
-            {loading && <LoadingIndicator />}
             {currentView === 'selector' && (
                 <GameSelector onSubmit={handleGameGeneration} />
+            )}
+            {currentView === 'optimize' && gameData && (
+                <RuleOptimizer
+                    gameData={gameData}
+                    newRule={newRule}
+                    setNewRule={setNewRule}
+                    onOptimize={handleRuleOptimization}
+                    onContinue={startGameAfterOptimize}
+                />
             )}
             {currentView === 'game' && gameData && (
                 <GamePlay
@@ -42,8 +96,11 @@ const BoardgameServerApp: React.FC = () => {
                     setSelectedCharacter={setSelectedCharacter}
                     roundNumber={roundNumber}
                     setRoundNumber={setRoundNumber}
+                    showLoading={showLoading}
+                    hideLoading={hideLoading}
                 />
             )}
+            <LoadingIndicator />
         </div>
     );
 };
@@ -197,6 +254,72 @@ const GameSelector: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubmit })
     );
 };
 
+// Rule Optimizer Component
+const RuleOptimizer: React.FC<{
+    gameData: any;
+    newRule: string;
+    setNewRule: (rule: string) => void;
+    onOptimize: () => void;
+    onContinue: () => void;
+}> = ({ gameData, newRule, setNewRule, onOptimize, onContinue }) => {
+    return (
+        <div className="flex flex-col h-full">
+            <div className="flex flex-1">
+                {/* Rules Display */}
+                <div className="w-3/5 bg-amber-950 p-6 overflow-auto">
+                    <div className="bg-amber-100 p-6 rounded-lg shadow-inner h-full overflow-auto">
+                        <h2 className="text-2xl font-bold text-center mb-6 text-amber-800">Game Rules</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-amber-900">Game Title: {gameData.name}</h3>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-amber-900">Background</h3>
+                                <p className="text-amber-800">{gameData.background}</p>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-amber-900">Rules</h3>
+                                <RulesList rules={gameData.rules} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Optimization Form */}
+                <div className="w-2/5 p-6 bg-gray-100">
+                    <div className="bg-white p-6 rounded-lg shadow h-full flex flex-col">
+                        <h2 className="text-xl font-bold mb-4">Optimize Game Rules</h2>
+                        <p className="mb-4 text-gray-600">
+                            Enter your suggestions to improve or modify the game rules. Your feedback will be used to refine the game.
+                        </p>
+                        <textarea
+                            className="flex-1 w-full p-3 border rounded mb-4"
+                            value={newRule}
+                            onChange={(e) => setNewRule(e.target.value)}
+                            placeholder="Example: The game should have more strategy elements. Add a mechanic where players can trade resources."
+                        />
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={onOptimize}
+                                className="flex-1 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700"
+                                disabled={!newRule.trim()}
+                            >
+                                Update Rules
+                            </button>
+                            <button
+                                onClick={onContinue}
+                                className="flex-1 py-2 bg-green-600 text-white font-bold rounded hover:bg-green-700"
+                            >
+                                Continue to Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // Game Play Component
 const GamePlay: React.FC<{
     gameData: any;
@@ -204,16 +327,17 @@ const GamePlay: React.FC<{
     setSelectedCharacter: React.Dispatch<React.SetStateAction<any>>;
     roundNumber: number;
     setRoundNumber: React.Dispatch<React.SetStateAction<number>>;
-}> = ({ gameData, selectedCharacter, setSelectedCharacter, roundNumber, setRoundNumber }) => {
+    showLoading: () => void;
+    hideLoading: () => void;
+}> = ({ gameData, selectedCharacter, setSelectedCharacter, roundNumber, setRoundNumber, showLoading, hideLoading }) => {
     const [currentView, setCurrentView] = useState<'characterSelect' | 'gameplay'>(
         'characterSelect'
     );
-    const [loading, setLoading] = useState<boolean>(false);
     const [players, setPlayers] = useState<any[]>([]);
     const [actions, setActions] = useState<[string, string][]>([]);
     const [gameLog, setGameLog] = useState<{message: string, type: string}[]>([]);
     const [dynamicMessage, setDynamicMessage] = useState<string>('');
-    const urlPrefix = '';
+    const urlPrefix = config.boardgameUrl;
 
     useEffect(() => {
         // If character is selected and view is game, initialize the game
@@ -252,12 +376,29 @@ const GamePlay: React.FC<{
             ]
         };
 
+        // Image paths for random selection
+        const images = [
+            'assassin.png', 'barbarian.png', 'character.png', 'druid.png', 'king.png',
+            'magician.png', 'ninja.png', 'robin-hood.png', 'swordsman.png', 'wizard.png',
+            'adventurer.png', 'alchemy.png', 'character_1.png', 'character_2.png', 'monk.png', 'swords.png'
+        ];
+
         // Define available characters (excluding selected character)
         const availableCharacters = (gameData.players.roles ||
             gameData.players.Roles ||
             gameData.players.character_roles).filter(
             (char: any) => char.name !== selectedCharacter.name
         );
+
+        // Set to track used images
+        const usedImages = new Set();
+        if (selectedCharacter.image) {
+            // Extract the filename from the URL
+            const imageUrlMatch = selectedCharacter.image.match(/\/([^\/]+)'\)$/);
+            if (imageUrlMatch && imageUrlMatch[1]) {
+                usedImages.add(imageUrlMatch[1]);
+            }
+        }
 
         const newPlayers = playerPositions[playersCount].map((pos: any, index: number) => {
             if (pos.class === 'you') {
@@ -268,13 +409,23 @@ const GamePlay: React.FC<{
                     image: selectedCharacter.image
                 };
             } else {
+                // Select a character
                 const randomCharIndex = Math.floor(Math.random() * availableCharacters.length);
                 const character = availableCharacters.splice(randomCharIndex, 1)[0];
+
+                // Select a random unused image
+                let randomImage;
+                do {
+                    randomImage = images[Math.floor(Math.random() * images.length)];
+                } while (usedImages.has(randomImage) && usedImages.size < images.length);
+
+                usedImages.add(randomImage);
+
                 return {
                     ...pos,
                     name: character.name,
                     character: character.name,
-                    image: character.image
+                    image: `url('${process.env.PUBLIC_URL}/static/player-icons/${randomImage}')`
                 };
             }
         });
@@ -283,7 +434,7 @@ const GamePlay: React.FC<{
     };
 
     const startGame = () => {
-        setLoading(true);
+        showLoading();
         fetch(`${urlPrefix}/api/v1/gameplay/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -305,17 +456,17 @@ const GamePlay: React.FC<{
                 addLogEntry(`Game started with ${selectedCharacter.name} character`, 'system');
                 addLogEntry('Your turn to choose an activity', 'system');
 
-                setLoading(false);
+                hideLoading();
             })
             .catch(err => {
                 console.error('Error starting game:', err);
-                setLoading(false);
+                hideLoading();
             });
     };
 
     const handleAction = (actionKey: string, actionText: string) => {
         addLogEntry(`User chose to ${actionText}`, 'my-player');
-        setLoading(true);
+        showLoading();
 
         fetch(`${urlPrefix}/api/v1/gameplay/round`, {
             method: 'POST',
@@ -363,11 +514,11 @@ const GamePlay: React.FC<{
                     setRoundNumber(prev => prev + 1);
                 }
 
-                setLoading(false);
+                hideLoading();
             })
             .catch(err => {
                 console.error('Error during round:', err);
-                setLoading(false);
+                hideLoading();
             });
     };
 
@@ -389,8 +540,20 @@ const GamePlay: React.FC<{
 
     const showGameMessage = (message: string, isError: boolean) => {
         // In a real implementation, you would show a floating message
-        // This is a simplified version
-        console.log(message);
+        const messageEl = document.createElement('div');
+        messageEl.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-4 rounded-md text-2xl';
+        messageEl.textContent = message;
+
+        if (isError) {
+            messageEl.style.color = '#FF0000';
+        } else {
+            messageEl.style.color = '#FFD700';
+        }
+
+        document.body.appendChild(messageEl);
+        setTimeout(() => {
+            messageEl.remove();
+        }, 2000);
     };
 
     const startGameWithCharacter = () => {
@@ -412,6 +575,7 @@ const GamePlay: React.FC<{
     }
 
     const myPlayer = players.find(p => p.class === 'you');
+    const availableButtonIcons = ['🌟', '🌿', '♟️', '🎴', '💎', '🎳', '🎭', '🩸', '🏬', '🧙', '🪙', '🎨'];
 
     return (
         <div className="flex h-full">
@@ -443,10 +607,6 @@ const GamePlay: React.FC<{
                         <h1 className="text-2xl font-bold text-white px-6 py-2 border-b-4 border-double border-opacity-30 border-white">
                             {gameData.name}
                         </h1>
-                        <div className="absolute inset-0 pointer-events-none">
-                            <span className="absolute text-2xl top-0 right-0">🎲</span>
-                            <span className="absolute text-2xl bottom-0 left-0">🌀</span>
-                        </div>
                         <div className="text-sm italic text-white opacity-80 mt-1">A Tale of Strategy & Fortune</div>
                     </div>
                 </div>
@@ -454,7 +614,7 @@ const GamePlay: React.FC<{
                 {/* Game Board */}
                 <div className="flex-1 flex flex-col items-center justify-center p-4">
                     <div className="w-4/5 h-64 bg-cover bg-center border-4 border-white rounded-lg relative"
-                         style={{ backgroundImage: `url('./static/mappractice3.jpg')` }}>
+                         style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/static/mappractice3.jpg')` }}>
                         {players.map((player, index) => (
                             <div
                                 key={index}
@@ -485,7 +645,7 @@ const GamePlay: React.FC<{
                                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                                     onClick={() => handleAction(key, text)}
                                 >
-                                    🎮
+                                    {availableButtonIcons[index % availableButtonIcons.length]}
                                 </button>
                             </div>
                         ))}
@@ -495,27 +655,25 @@ const GamePlay: React.FC<{
 
             {/* Game Log Sidebar */}
             <div className="w-96 bg-gray-900 h-full relative overflow-hidden shadow-lg">
-                <div className="absolute inset-5 bg-black border-4 border-gray-700 rounded overflow-hidden">
+                <div className="absolute inset-5 bg-black border-4 border-gray-700 rounded overflow-hidden flex flex-col">
                     <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-2 text-center font-mono uppercase text-sm tracking-wider text-white border-b-2 border-gray-600">
                         Game Log
                     </div>
-                    <div className="p-4 h-full overflow-y-auto text-green-400 font-mono text-sm">
+                    <div className="p-4 flex-1 overflow-y-auto text-green-400 font-mono text-sm pb-6">
                         {gameLog.map((entry, index) => (
                             <div
                                 key={index}
                                 className={`my-2 p-1 border-l-2 ${getLogEntryClass(entry.type)}`}
                             >
-                <span className="text-gray-500 text-xs mr-2">
-                  {new Date().toLocaleTimeString()}
-                </span>
+                    <span className="text-gray-500 text-xs mr-2">
+                        {new Date().toLocaleTimeString()}
+                    </span>
                                 {entry.message}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-
-            {loading && <LoadingIndicator />}
         </div>
     );
 };
@@ -531,12 +689,38 @@ const CharacterSelection: React.FC<{
         gameData.players.Roles ||
         gameData.players.character_roles || [];
 
+    // Image paths for random selection
+    const images = [
+        'assassin.png', 'barbarian.png', 'character.png', 'druid.png', 'king.png',
+        'magician.png', 'ninja.png', 'robin-hood.png', 'swordsman.png', 'wizard.png',
+        'adventurer.png', 'alchemy.png', 'character_1.png', 'character_2.png', 'monk.png', 'swords.png'
+    ];
+
+    // Assign random images to characters if not already assigned
+    const usedImages = new Set();
+    const charactersWithImages = characters.map((character: any) => {
+        if (!character.image) {
+            // Select a random unused image
+            let randomImage;
+            do {
+                randomImage = images[Math.floor(Math.random() * images.length)];
+            } while (usedImages.has(randomImage) && usedImages.size < images.length);
+
+            usedImages.add(randomImage);
+            character.image = randomImage;
+        }
+        console.log("character:", character);
+        console.log("Selected character image:", character.image);
+        console.log("Selected character image path:", `url('${process.env.PUBLIC_URL}/static/player-icons/${character.image}')`);
+        return character;
+    });
+
     return (
         <div className="flex flex-col items-center justify-center p-8 bg-gray-800 text-white h-full">
             <h1 className="text-3xl font-bold mb-8">Choose Your Character</h1>
 
             <div className="grid grid-cols-2 gap-6 mb-8">
-                {characters.map((character: any, index: number) => (
+                {charactersWithImages.map((character: any, index: number) => (
                     <div
                         key={index}
                         className={`w-64 h-80 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl p-6 flex flex-col items-center cursor-pointer transition-all ${
@@ -546,13 +730,13 @@ const CharacterSelection: React.FC<{
                         }`}
                         onClick={() => onSelectCharacter({
                             name: character.name,
-                            image: `url('./static/player-icons/${character.image || 'character.png'}')`
+                            image: character.image
                         })}
                     >
                         <div
                             className="w-32 h-32 rounded-full border-4 border-white mb-4 bg-center bg-cover"
                             style={{
-                                backgroundImage: `url('./static/player-icons/${character.image || 'character.png'}')`
+                                backgroundImage: `url('${process.env.PUBLIC_URL}/static/player-icons/${character.image}')`
                             }}
                         ></div>
                         <div className="text-xl font-bold mb-2 text-center">{character.name}</div>
@@ -607,7 +791,7 @@ const RulesList: React.FC<{ rules: any }> = ({ rules }) => {
 };
 
 const LoadingIndicator: React.FC = () => (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div id="loadingIndicator" className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" style={{ display: 'none' }}>
         <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
             <div className="text-gray-800 font-semibold">
@@ -631,5 +815,6 @@ const getLogEntryClass = (type: string) => {
         default: return 'border-green-500 text-green-400';
     }
 };
+
 
 export default BoardgameServerApp;
