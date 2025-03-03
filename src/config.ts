@@ -15,12 +15,12 @@ const configs: Record<string, Config> = {
     test: {
         apiBaseUrl: 'https://api.jingpersonal.click:6001',
         mockServiceUrl: 'https://mock.jingpersonal.click:6002',
-        boardgameUrl: 'http://localhost:9001',
+        boardgameUrl: 'https://api.jingpersonal.click:6001',
     },
     production: {
         apiBaseUrl: 'https://api.jingpersonal.click:6001',
         mockServiceUrl: 'https://mock.jingpersonal.click:6002',
-        boardgameUrl: 'http://localhost:9001',
+        boardgameUrl: 'https://api.jingpersonal.click:6001',
     },
 };
 
