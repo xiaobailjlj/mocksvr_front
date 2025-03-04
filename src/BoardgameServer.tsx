@@ -9,7 +9,7 @@ const BoardgameServerApp: React.FC = () => {
     const [selectedCharacter, setSelectedCharacter] = useState<any>(null);
     const [roundNumber, setRoundNumber] = useState<number>(1);
     const [newRule, setNewRule] = useState<string>('');
-    const urlPrefix = config.boardgameUrl;
+    // const urlPrefix = config.boardgameUrl;
 
     // Functions to handle loading state
     const showLoading = () => {
@@ -28,7 +28,7 @@ const BoardgameServerApp: React.FC = () => {
 
     const handleGameGeneration = (formData: any) => {
         showLoading();
-        fetch(`${urlPrefix}/api/v1/rules/generate`, {
+        fetch(`${config.apiBaseUrl}/api/v1/rules/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -49,7 +49,7 @@ const BoardgameServerApp: React.FC = () => {
         if (newRule.trim() === '') return;
 
         showLoading();
-        fetch(`${urlPrefix}/api/v1/rules/optimize`, {
+        fetch(`${config.apiBaseUrl}/api/v1/rules/optimize`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -337,7 +337,7 @@ const GamePlay: React.FC<{
     const [actions, setActions] = useState<[string, string][]>([]);
     const [gameLog, setGameLog] = useState<{message: string, type: string}[]>([]);
     const [dynamicMessage, setDynamicMessage] = useState<string>('');
-    const urlPrefix = config.boardgameUrl;
+    // const urlPrefix = config.boardgameUrl;
 
     useEffect(() => {
         // If character is selected and view is game, initialize the game
@@ -435,7 +435,7 @@ const GamePlay: React.FC<{
 
     const startGame = () => {
         showLoading();
-        fetch(`${urlPrefix}/api/v1/gameplay/start`, {
+        fetch(`${config.apiBaseUrl}/api/v1/gameplay/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -468,7 +468,7 @@ const GamePlay: React.FC<{
         addLogEntry(`User chose to ${actionText}`, 'my-player');
         showLoading();
 
-        fetch(`${urlPrefix}/api/v1/gameplay/round`, {
+        fetch(`${config.apiBaseUrl}/api/v1/gameplay/round`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

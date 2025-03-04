@@ -47,11 +47,13 @@ const MockServerApp: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
+    const [owner, setOwner] = useState<string>('');
+    const [keyword, setKeyword] = useState<string>('');
 
     // Fetch mock URLs with pagination
     const fetchMockUrls = async (page = 1) => {
         try {
-            const response = await fetch(`${config.apiBaseUrl}/v1/url/query/all?page=${page}&size=${pageSize}`);
+            const response = await fetch(`${config.apiBaseUrl}/v1/url/query/all?keyword=${keyword}&owner=${owner}&page=${page}&size=${pageSize}`);
             if (!response.ok) throw new Error('Failed to fetch mock URLs');
             const data: MockResponse = await response.json();
 
@@ -112,6 +114,36 @@ const MockServerApp: React.FC = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    <div className="flex items-end gap-4 mb-4">
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">URL</label>
+                            <input
+                                type="text"
+                                value={keyword}
+                                onChange={e => setKeyword(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                placeholder="Enter URL"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">Owner</label>
+                            <input
+                                type="text"
+                                value={owner}
+                                onChange={e => setOwner(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                placeholder="Enter Owner"
+                            />
+                        </div>
+                        <div>
+                            <button
+                                onClick={() => fetchMockUrls(currentPage)}
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            >
+                                Fetch
+                            </button>
+                        </div>
+                    </div>
                     <div className="space-y-4">
                         <table className="w-full">
                             <thead>
@@ -119,6 +151,7 @@ const MockServerApp: React.FC = () => {
                                 <th className="text-left p-2">ID</th>
                                 <th className="text-left p-2">URL</th>
                                 <th className="text-left p-2">Description</th>
+                                <th className="text-left p-2">Owner</th>
                                 <th className="text-left p-2">Details</th>
                                 <th className="text-left p-2">Delete</th>
                                 <th className="text-left p-2">Select</th>
@@ -130,6 +163,7 @@ const MockServerApp: React.FC = () => {
                                     <td className="p-2">{mock.id}</td>
                                     <td className="p-2">{mock.url}</td>
                                     <td className="p-2">{mock.description || '-'}</td>
+                                    <td className="p-2">{mock.owner || '-'}</td>
                                     <td className="p-2">
                                         <button
                                             onClick={() => setState({ isOpen: true, mockData: mock })}
