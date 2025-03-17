@@ -242,7 +242,7 @@ const MockServerApp: React.FC = () => {
                         <Play className="w-5 h-5 mr-2" />
                         Test Mock
                     </CardTitle>
-                    <CardDescription>Test your mock endpoints</CardDescription>
+                    <CardDescription>Test your mock endpoints at: {config.mockServiceUrl}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">

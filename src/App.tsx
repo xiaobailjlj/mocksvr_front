@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Terminal, Dices, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react';
+import {FileText, Terminal, Dices, UtensilsCrossed, ChevronLeft, ChevronRight} from 'lucide-react';
 
 import WrappedMockServerApp from './MockServer';
 import BoardgameServerApp from './BoardgameServer';
+import CVServerApp from "./CVServerApp";
 
 const App: React.FC = () => {
     const [selectedProject, setSelectedProject] = useState<string>('mock-server');
     const [collapsed, setCollapsed] = useState(false);
 
     const projects = [
+        { id: 'cv', name: 'Curriculum Vitae', icon: FileText },
         { id: 'mock-server', name: 'Mock Server', icon: Terminal },
         { id: 'boardgame', name: 'Boardgame', icon: Dices },
         { id: 'recipe', name: 'Recipe', icon: UtensilsCrossed }
@@ -52,6 +54,7 @@ const App: React.FC = () => {
             </div>
             {/* Main Content */}
             <div className="flex-1 p-0 overflow-auto">
+                {selectedProject === 'cv' && <CVServerApp />}
                 {selectedProject === 'mock-server' && <WrappedMockServerApp />}
                 {selectedProject === 'boardgame' && <BoardgameServerApp />}
                 {/* Recipe app would be added here when implemented */}
