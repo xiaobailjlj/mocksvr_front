@@ -6,12 +6,23 @@
   <component name="ChangeListManager">
     <list default="true" id="1d69695c-0ea6-45cb-b0d4-293ac509e437" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/CV_JingLu_version2.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/public/CV_JingLu_version2.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/CV_JingLu_version2.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CVServerApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/CVServerApp.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CreateMockDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/CreateMockDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -75,7 +86,7 @@
       <workItem from="1740329351805" duration="39000" />
       <workItem from="1740329408467" duration="630000" />
       <workItem from="1740330052080" duration="17000" />
-      <workItem from="1740330073195" duration="93023000" />
+      <workItem from="1740330073195" duration="102576000" />
     </task>
     <servers />
   </component>

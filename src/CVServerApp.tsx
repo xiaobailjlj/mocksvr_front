@@ -3,7 +3,7 @@ import { Download } from 'lucide-react';
 
 const CVServerApp: React.FC = () => {
     // Path to your CV PDF file
-    const cvPath = '/CV_JingLu_version2.pdf';
+    const cvPath = '/CV_JingLu.pdf';
 
     return (
         <div className="flex flex-col h-full p-4">

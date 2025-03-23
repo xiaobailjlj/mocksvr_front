@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import {FileText, Terminal, Dices, UtensilsCrossed, ChevronLeft, ChevronRight} from 'lucide-react';
-
+import {FileText, Terminal, Dices, UtensilsCrossed, ChevronLeft, ChevronRight, AlertTriangle} from 'lucide-react';
 import WrappedMockServerApp from './MockServer';
 import BoardgameServerApp from './BoardgameServer';
 import CVServerApp from "./CVServerApp";
+import BiasDetectorApp from "./BiasDetectorApp";
 
 const App: React.FC = () => {
     const [selectedProject, setSelectedProject] = useState<string>('mock-server');
@@ -13,6 +13,7 @@ const App: React.FC = () => {
         { id: 'cv', name: 'Curriculum Vitae', icon: FileText },
         { id: 'mock-server', name: 'Mock Server', icon: Terminal },
         { id: 'boardgame', name: 'Boardgame', icon: Dices },
+        { id: 'bias-detector', name: 'Bias Detector', icon: AlertTriangle },
         { id: 'recipe', name: 'Recipe', icon: UtensilsCrossed }
     ];
 
@@ -30,7 +31,6 @@ const App: React.FC = () => {
                         <ChevronLeft className="w-4 h-4 text-gray-600" />
                     }
                 </button>
-
                 <div className="p-4">
                     <h2 className={`text-xl font-bold mb-4 ${collapsed ? 'text-center' : ''}`}>
                         {collapsed ? 'M' : 'Mini Projects'}
@@ -57,6 +57,7 @@ const App: React.FC = () => {
                 {selectedProject === 'cv' && <CVServerApp />}
                 {selectedProject === 'mock-server' && <WrappedMockServerApp />}
                 {selectedProject === 'boardgame' && <BoardgameServerApp />}
+                {selectedProject === 'bias-detector' && <BiasDetectorApp />}
                 {/* Recipe app would be added here when implemented */}
             </div>
         </div>
